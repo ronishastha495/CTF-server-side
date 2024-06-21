@@ -1,9 +1,9 @@
-import { config as conf } from "dotenv";
-conf();
+const dotenv = require("dotenv");
+dotenv.config();
 
 const _config = {
-  port: process.env.PORT,
+  port: process.env.PORT || 3000,
   databaseUrl: process.env.MONGO_URI,
 };
 
-export const config = Object.freeze(_config);
+module.exports = Object.freeze(_config);

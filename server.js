@@ -1,6 +1,6 @@
-import app from "./src/app";
-import { config } from "./src/config/config";
-import connectDB from "./src/config/db";
+const app = require("./src/app");
+const config = require("./src/config/config");
+const connectDB = require("./src/config/db");
 
 const startServer = async () => {
   await connectDB();
