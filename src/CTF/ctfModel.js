@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const ctfModelSchema = new mongoose.Schema(
   {
+    topicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Topic",
+      required: true,
+    },
     introduction: {
       type: String,
       required: true,

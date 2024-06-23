@@ -1,8 +1,9 @@
 const express = require("express");
-const { createCTF } = require("./ctfController");
+const { createTopic ,getTopic} = require("./topicController");
 
-const ctfRouter = express.Router();
+const topicRouter = express.Router();
 
-ctfRouter.post("/", createCTF);
+topicRouter.post("/createTopic", createTopic);
+topicRouter.get("/getAllTopic", getTopic);
 
-module.exports = ctfRouter;
+module.exports = { topicRouter };

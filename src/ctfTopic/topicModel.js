@@ -1,43 +1,13 @@
-const mongoose = require("mongoose");
-const ctfModelSchema = new mongoose.Schema(
-  {
+const mongoose = require('mongoose');
+
+const topicSchema = new mongoose.Schema({
     topic: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    introduction: {
-      type: String,
-      required: true,
-    },
-    requirements: {
-      type: String,
-      required: true,
-    },
-    link: {
-      type: String,
-      required: true,
-    },
-    scenerio: {
-      type: String,
-      required: true,
-    },
-    begin: {
-      type: String,
-      required: true,
-    },
-    question: {
-      type: String,
-      required: true,
-    },
-    answer: {
-      type: String,
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+        type: String,
+        required: true
+    }
+});
 
-const ctfModel = mongoose.model("ctf", ctfModelSchema);
+// Check if the model already exists
+const Topic = mongoose.models.Topic || mongoose.model('Topic', topicSchema);
 
-module.exports = ctfModel;
+module.exports = Topic;

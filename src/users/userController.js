@@ -38,7 +38,6 @@ const registerUser = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
-
     const token = jwt.sign({ sub: newUser._id }, config.jwtSecret, {
       expiresIn: "1d",
     });
