@@ -1,11 +1,13 @@
-const globalErrorHandler = (err, req, res, next) => {
-  err.message = err.message || "Internal Server Error";
-  err.statusCode = err.statusCode || 500;
+const { HttpError } = require("http-errors");
+const { config } = require("../config/config");
 
-  return res.status(err.statusCode).json({
-    success: false,
+const globalErrorHandler = (err, req, res, next) => {
+  const statusCode = err instanceof HttpError ? err.status : 500;
+
+  res.status(statusCode).json({
     message: err.message,
+    errorStack: config.env === "development" ? err.stack : "",
   });
 };
 
-export default globalErrorHandler;
+module.exports = globalErrorHandler;
