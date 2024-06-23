@@ -9,4 +9,8 @@ app.get("/home", (req, res, next) => {
   res.json({ message: "Welcome to CTN home page" });
 });
 
+app.get("/home", (req, res, next) => {
+  res.json({ message: "Welcome to Raja.." });
+});
+
 module.exports = app;
