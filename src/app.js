@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const createHttpError = require("http-errors");
+const createError = require("http-errors");
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
 const userRouter = require("./users/userRouter");
 
@@ -9,8 +9,7 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res, next) => {
-  const error = createHttpError(400, "Something went wrong!");
-  next(error);  
+  res.json({ msg: "Welcome to CTF Nepal." });
 });
 
 app.use("/api/users", userRouter);

@@ -41,7 +41,7 @@ const registerUser = async (req, res, next) => {
     });
 
     const token = jwt.sign({ sub: newUser._id }, config.jwtSecret, {
-      expiresIn: "7d",
+      expiresIn: "1d",
     });
     res.status(201).json({ accessToken: token });
   } catch (error) {
@@ -49,6 +49,32 @@ const registerUser = async (req, res, next) => {
   }
 };
 
+const loginUser = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(createError(400, "All feilds are required!"));
+  }
+
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return next(createError(404, "User not found!"));
+    }
+    const passMatch = await bcrypt.compare(password, user.password);
+    if (!passMatch) {
+      return next(createError(401, "Incorrect email and password !"));
+    }
+    const token = jwt.sign({ sub: user._id }, config.jwtSecret, {
+      expiresIn: "1d",
+    });
+    res.json({ accessToken: token });
+  } catch (error) {
+    return next(createError(500, "Server error while login."));
+  }
+};
+
 module.exports = {
   registerUser,
+  loginUser,
 };
