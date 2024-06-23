@@ -3,10 +3,10 @@ const ctfModel = require("./ctfModel");
 const topicModel = require("../ctfTopic/topicModel");
 
 const createCTF = async (req, res, next) => {
-    const { topic, introduction, requirements, link, begin, scenerio, question, answer } = req.body;
+    const { topic, introduction, requirements, link, begin, scenerio, question, answer,points } = req.body;
 
     // Validating
-    if (!introduction || !topic || !requirements || !link || !begin || !scenerio || !question || !answer) {
+    if (!introduction || !topic || !requirements || !link || !begin || !scenerio || !question || !answer || !points) {
         const error = createError(400, "All fields are required.");
         return next(error);
     }
@@ -28,7 +28,8 @@ const createCTF = async (req, res, next) => {
             scenerio,
             begin,
             question,
-            answer
+            answer,
+            points,
         });
 
         res.status(200).json({

@@ -29,6 +29,7 @@ const getTopic = async (req, res, next) => {
     next(createError(500, "Server Error while getting the topics"));
   }
 };
+
 module.exports = {
   createTopic,
   getTopic,

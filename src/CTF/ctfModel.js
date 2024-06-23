@@ -34,6 +34,10 @@ const ctfModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    points: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );
