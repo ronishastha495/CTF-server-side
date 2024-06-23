@@ -43,7 +43,10 @@ const registerUser = async (req, res, next) => {
     const token = jwt.sign({ sub: newUser._id }, config.jwtSecret, {
       expiresIn: "1d",
     });
-    res.status(200).json({ accessToken: token });
+    res.status(200).json({
+      message: "User registered sucessfully",
+      accessToken: token,
+    });
   } catch (error) {
     next(createError(500, "Server Error while creating new user."));
   }
@@ -68,7 +71,10 @@ const loginUser = async (req, res, next) => {
     const token = jwt.sign({ sub: user._id }, config.jwtSecret, {
       expiresIn: "1d",
     });
-    res.status(200).json({ accessToken: token });
+    res.status(200).json({
+      message: "User Login Sucessfully",
+      accessToken: token,
+    });
   } catch (error) {
     return next(createError(500, "Server error while login."));
   }
