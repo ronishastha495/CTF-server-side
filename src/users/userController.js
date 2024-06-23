@@ -2,7 +2,10 @@ const createError = require("http-errors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const userModel = require("./userModel");
-const config  = require("../config/config");
+const config = require("../config/config");
+
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
   const { fullname, username, email, password } = req.body;
@@ -11,10 +14,21 @@ const registerUser = async (req, res, next) => {
     return next(error);
   }
 
+  if (!passwordRegex.test(password)) {
+    const error = createError(400, "Password must be strong!");
+    return next(error);
+  }
+
   try {
-    const user = await userModel.findOne({ email });
-    if (user) {
-      const error = createError(400, "User already exists with this email!");
+    const existingUsername = await userModel.findOne({ username });
+    if (existingUsername) {
+      const error = createError(400, "Username is already taken.");
+      return next(error);
+    }
+
+    const existingEmail = await userModel.findOne({ email });
+    if (existingEmail) {
+      const error = createError(400, "Email is already registered.");
       return next(error);
     }
     // Hash the password
@@ -23,7 +37,7 @@ const registerUser = async (req, res, next) => {
       fullname,
       username,
       email,
-      password: hashedPassword, // Store the hashed password
+      password: hashedPassword,
     });
 
     const token = jwt.sign({ sub: newUser._id }, config.jwtSecret, {

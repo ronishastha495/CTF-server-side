@@ -1,5 +1,5 @@
 const { HttpError } = require("http-errors");
-const { config } = require("../config/config");
+const config  = require("../config/config");
 
 const globalErrorHandler = (err, req, res, next) => {
   const statusCode = err instanceof HttpError ? err.status : 500;
