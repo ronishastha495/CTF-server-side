@@ -54,7 +54,7 @@ const getCTFByTopic = async (req, res, next) => {
     const topicId = req.params.id;
     console.log("Received topicId:", topicId);
     try {
-
+        //coverting to object id to ensure that matching id in mango db
         const allCTFByTopic = await ctfModel.find({ topicId: new mongoose.Types.ObjectId(topicId)});
        
         if (!allCTFByTopic || allCTFByTopic.length === 0) {
