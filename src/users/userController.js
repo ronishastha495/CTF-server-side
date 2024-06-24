@@ -4,8 +4,7 @@ const bcrypt = require("bcrypt");
 const userModel = require("./userModel");
 const config = require("../config/config");
 
-const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
   const { fullname, username, email, password } = req.body;
@@ -39,7 +38,6 @@ const registerUser = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
-
     const token = jwt.sign({ sub: newUser._id }, config.jwtSecret, {
       expiresIn: "1d",
     });
