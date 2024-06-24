@@ -6,6 +6,7 @@ const checkUserRole = (requiredRole) => {
   return async (req, res, next) => {
     try {
       const IdRequest = req.params.id;
+      console.log(IdRequest);
       const token = req.headers.authorization?.split(" ")[1];
 
       if (!token) {

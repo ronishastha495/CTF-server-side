@@ -1,11 +1,14 @@
-FROM node:20
+FROM node:20-alpine
 
-WORKDIR /CTF_server
+WORKDIR /ctf-server
 
-COPY ./package*.json ./
+COPY package.json package-lock.json ./
+
 RUN npm install
 
-COPY . .
+COPY src ./src
+COPY .env ./
 
 EXPOSE 5300
+
 CMD ["npm", "run", "dev"]

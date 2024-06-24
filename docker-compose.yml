@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  ctf_server:
+    image: ctf_server_image
+    ports:
+      - "5300:5300"
+    volumes:
+      - ./my-app:/usr/src/app
+    env_file:
+      - .env
+    depends_on: []  
+
+volumes:
+  mongo_data:  
