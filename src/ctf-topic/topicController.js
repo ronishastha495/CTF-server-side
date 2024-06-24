@@ -4,7 +4,7 @@ const topicModel = require("./topicModel");
 const createTopic = async (req, res, next) => {
   const { topic, description } = req.body;
   if (!topic || !description) {
-    const error = createError(400, "Please, Fill the Topic.");
+    const error = createError(400, "Please, Fill all the feilds.");
     return next(error);
   }
 
