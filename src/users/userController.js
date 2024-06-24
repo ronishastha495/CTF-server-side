@@ -41,12 +41,8 @@ const registerUser = async (req, res, next) => {
       role: role || "user",
     });
 
-    const token = jwt.sign({ sub: newUser._id }, config.jwtSecret, {
-      expiresIn: "1d",
-    });
     res.status(200).json({
       message: "User registered sucessfully",
-      accessToken: token,
       newUser,
     });
   } catch (error) {
