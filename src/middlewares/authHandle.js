@@ -18,6 +18,8 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
+
+
 const isAdmin = async (req, res, next) => {
     const user = await userModel.findById(req.user.sub);
     if (user.role!== 'admin') return res.status(403).send('Access Denied');
@@ -25,6 +27,10 @@ const isAdmin = async (req, res, next) => {
 };
 
 const isUser = async (req, res, next) => {
+    const userId = req.params.id;
+    if (req.user.sub !== userId) {
+        return res.status(403).send("Access Denied. User ID does not match.");
+    }
     const user = await userModel.findById(req.user.sub);
     if (user.role!== 'user') return res.status(403).send('Access Denied');
     next();
