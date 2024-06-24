@@ -1,5 +1,8 @@
 const express = require("express");
-const checkUserRole = require("../middlewares/rbacMiddleware");
+
+const { isAdmin, isUser, authenticateToken } = require("../middlewares/authHandle");
+
+
 const {
   registerUser,
   loginUser,
@@ -10,7 +13,7 @@ const userRouter = express.Router();
 
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
-userRouter.get("/", checkUserRole("admin"), getAllUsers);
-userRouter.get("/:id", checkUserRole("user"), getUserById);
+userRouter.get("/", authenticateToken, isAdmin, getAllUsers);
+userRouter.get("/:id", authenticateToken, isUser, getUserById);
 
 module.exports = userRouter;
