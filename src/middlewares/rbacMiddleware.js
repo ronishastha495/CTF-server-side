@@ -9,7 +9,7 @@ const checkUserRole = (requiredRole) => {
       const token = req.headers.authorization?.split(" ")[1];
 
       if (!token) {
-        return res.status(403).send("No token provided.");
+        return res.status(403).send("Access Denied. No token provided.");
       }
 
       jwt.verify(token, config.jwtSecret, async (err, decoded) => {
