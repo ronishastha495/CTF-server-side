@@ -8,3 +8,4 @@ ctfRouter.get("/getAllCTF", getCTF);
 ctfRouter.get("/getAllCTFByTopic/:id", getCTFByTopic);
 
 module.exports = ctfRouter;
+    

@@ -38,6 +38,10 @@ const ctfModelSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    hints: {
+      type: String,
+      required : true
+    },
   },
   { timestamps: true }
 );
