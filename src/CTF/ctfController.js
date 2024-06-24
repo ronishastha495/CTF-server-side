@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const createError = require("http-errors");
 const ctfModel = require("./ctfModel");
 const topicModel = require("../ctfTopic/topicModel");
@@ -40,7 +41,7 @@ const createCTF = async (req, res, next) => {
     }
 };
 
-const getCTF =async (req, res) => {
+const getCTF =async (req, res, next) => {
     try {
         const allCTF = await ctfModel.find();
         res.status(200).json(allCTF);
@@ -49,4 +50,23 @@ const getCTF =async (req, res) => {
     }
 };
 
-module.exports = { createCTF , getCTF};
+const getCTFByTopic = async (req, res, next) => {
+    const topicId = req.params.id;
+    console.log("Received topicId:", topicId);
+    try {
+
+        const allCTFByTopic = await ctfModel.find({ topicId: new mongoose.Types.ObjectId(topicId)});
+       
+        if (!allCTFByTopic || allCTFByTopic.length === 0) {
+            return next(createError(400, "CTF Topic Not Found."));
+        }
+
+        res.status(200).json(allCTFByTopic);
+    } catch (error) {
+        console.error("Error during database query:", error);
+        next(createError(500, "Server Error while getting CTF Questions by Topic."));
+    }
+};
+
+
+module.exports = { createCTF , getCTF, getCTFByTopic};
