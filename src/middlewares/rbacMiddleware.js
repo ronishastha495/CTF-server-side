@@ -5,6 +5,7 @@ const config = require("../config/config");
 const checkUserRole = (requiredRole) => {
   return async (req, res, next) => {
     try {
+      const IdRequest = req.params.id;
       const token = req.headers.authorization?.split(" ")[1];
 
       if (!token) {
@@ -14,6 +15,10 @@ const checkUserRole = (requiredRole) => {
       jwt.verify(token, config.jwtSecret, async (err, decoded) => {
         if (err) {
           return res.status(403).send("Failed to authenticate token.");
+        }
+
+        if (decoded.sub !== IdRequest) {
+          return res.status(403).send("Token does not match the requested ID.");
         }
 
         const user = await UserModel.findById(decoded.sub);
