@@ -7,7 +7,7 @@ const config = require("../config/config");
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
-  const { fullname, username, email, password } = req.body;
+  const { fullname, username, email, password, role } = req.body;
   if (!fullname || !username || !email || !password) {
     const error = createError(400, "All fields are required.");
     return next(error);
@@ -37,6 +37,7 @@ const registerUser = async (req, res, next) => {
       username,
       email,
       password: hashedPassword,
+      role: role || "user",
     });
     const token = jwt.sign({ sub: newUser._id }, config.jwtSecret, {
       expiresIn: "1d",
@@ -44,6 +45,7 @@ const registerUser = async (req, res, next) => {
     res.status(200).json({
       message: "User registered sucessfully",
       accessToken: token,
+      newUser,
     });
   } catch (error) {
     next(createError(500, "Server Error while creating new user."));
@@ -78,7 +80,31 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    const user = await userModel.find({});
+    res.json(user);
+  } catch (error) {
+    return next(createError(500, "Server error while fetching users."));
+  }
+};
+
+const getUserById = async (req, res, next) => {
+  const userId = req.params.id;
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return next(createError(404, "User not found."));
+    }
+    res.json(user);
+  } catch (error) {
+    return next(createError(500, "Server error while fetch user by ID."));
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  getAllUsers,
+  getUserById,
 };

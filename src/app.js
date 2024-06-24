@@ -1,11 +1,14 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
+
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
 const userRouter = require("./users/userRouter");
 const ctfRouter = require("./CTF/ctfRouter");
 const { topicRouter } = require("./ctfTopic/topicRouter");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Routes

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const userModelSchema = new mongoose.Schema(
   {
     fullname: {
@@ -18,10 +19,15 @@ const userModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   { timestamps: true }
 );
 
-const UserModel = mongoose.model("user", userModelSchema);
+const UserModel = mongoose.model("User", userModelSchema);
 
 module.exports = UserModel;
