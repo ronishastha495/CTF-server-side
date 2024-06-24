@@ -4,8 +4,8 @@ const cors = require("cors");
 
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
 const userRouter = require("./users/userRouter");
-const ctfRouter = require("./CTF/ctfRouter");
-const { topicRouter } = require("./ctfTopic/topicRouter");
+const ctfRouter = require("./ctf/ctfRouter");
+const { topicRouter } = require("./ctf-topic/topicRouter");
 
 const app = express();
 app.use(cors());

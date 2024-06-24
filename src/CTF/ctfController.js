@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const createError = require("http-errors");
 const ctfModel = require("./ctfModel");
-const topicModel = require("../ctfTopic/topicModel");
+const topicModel = require("../ctf-topic/topicModel");
 
 const createCTF = async (req, res, next) => {
     const { topic, introduction, requirements, link, begin, scenerio, question, answer,points } = req.body;
