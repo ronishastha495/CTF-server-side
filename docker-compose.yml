@@ -3,10 +3,14 @@ version: '3.8'
 services:
   ctf_server:
     image: ctf_server_image
-    build: .
     ports:
       - "5300:5300" 
     env_file:
       - .env
+    depends_on : []
+
+volumes:
+  mongo_data:
+    
 
 

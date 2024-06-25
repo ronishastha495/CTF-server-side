@@ -1,7 +1,7 @@
 
 FROM node:20-alpine
 
-WORKDIR /ctf-server
+WORKDIR /ctf-server-side
 
 COPY package.json package-lock.json ./
 
