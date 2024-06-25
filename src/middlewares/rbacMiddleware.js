@@ -6,7 +6,8 @@ const checkUserRole = (requiredRole) => {
   return async (req, res, next) => {
     try {
       const IdRequest = req.params.id;
-      console.log(IdRequest);
+      console.log("IdRequest:", IdRequest);
+
       const token = req.headers.authorization?.split(" ")[1];
 
       if (!token) {
@@ -15,8 +16,11 @@ const checkUserRole = (requiredRole) => {
 
       jwt.verify(token, config.jwtSecret, async (err, decoded) => {
         if (err) {
+          console.error("JWT Verification Error:", err);
           return res.status(403).send("Failed to authenticate token.");
         }
+
+        console.log("Decoded sub:", decoded.sub); 
 
         if (decoded.sub !== IdRequest) {
           return res.status(403).send("Token does not match the requested ID.");
@@ -31,6 +35,7 @@ const checkUserRole = (requiredRole) => {
         next();
       });
     } catch (error) {
+      console.error("Middleware Error:", error);
       return res.status(500).send("Internal Server Error");
     }
   };
