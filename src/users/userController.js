@@ -1,10 +1,10 @@
 const createError = require("http-errors");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const userModel = require("./userModel");
-const config = require("../config/config");
+const { generateAccessToken, generateRefreshToken } = require("../utils/auth");
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
   const { fullname, username, email, password, role } = req.body;
@@ -65,14 +65,23 @@ const loginUser = async (req, res, next) => {
     if (!passMatch) {
       return next(createError(401, "Incorrect email and password !"));
     }
-    const token = jwt.sign({ sub: user._id }, config.jwtSecret, {
-      expiresIn: "1d",
-    });
+
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+    user.refreshToken = refreshToken;
+    try {
+      const savedUser = await user.save();
+      console.log("User saved successfully:", savedUser);
+    } catch (error) {
+      console.log("Error saving user: ", error);
+    }
+
     res.status(200).json({
       message: "User Login Sucessfully",
-      accessToken: token,
+      accessToken: accessToken,
     });
   } catch (error) {
+    console.error("Error while logging in:", error);
     return next(createError(500, "Server error while login."));
   }
 };
