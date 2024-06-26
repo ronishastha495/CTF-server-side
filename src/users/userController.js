@@ -70,8 +70,7 @@ const loginUser = async (req, res, next) => {
     const refreshToken = generateRefreshToken(user._id);
     user.refreshToken = refreshToken;
     try {
-      const savedUser = await user.save();
-      console.log("User saved successfully:", savedUser);
+      await user.save();
     } catch (error) {
       console.log("Error saving user: ", error);
     }
