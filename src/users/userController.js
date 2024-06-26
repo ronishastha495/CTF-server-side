@@ -67,9 +67,7 @@ const loginUser = async (req, res, next) => {
     }
 
     const accessToken = generateAccessToken(user._id);
-    console.log(accessToken);
     const refreshToken = generateRefreshToken(user._id);
-    console.log(refreshToken);
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -106,8 +104,32 @@ const loginUser = async (req, res, next) => {
 };
 
 const handleLogout = async (req, res, next) => {
-  // handle logout
-  
+  try {
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          return next(err);
+        }
+      });
+      // Clear the refresh token cookie
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      // Clear the access token cookie
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      res.status(200).json({ message: "Logout successfull" });
+    }
+  } catch (error) {
+    next(createError(500, "Server error while logging out."));
+  }
 };
 
 const getAllUsers = async (req, res, next) => {
