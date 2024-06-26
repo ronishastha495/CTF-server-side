@@ -21,12 +21,17 @@ const createTopic = async (req, res, next) => {
     const newTopic = await topicModel.create({
       topic,
       description,
-      createdBy
+      createdBy,
     });
 
     res.status(200).json({
-      message: "Topic Created successfully",
-      newTopic
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Topic Created successfully",
+        Topic: newTopic,
+      },
     });
   } catch (error) {
     console.error("Error while adding a new topic:", error);
@@ -36,10 +41,17 @@ const createTopic = async (req, res, next) => {
 
 const getTopic = async (req, res, next) => {
   try {
-    const topics = await topicModel.find();
-    res.status(200).json(topics);
+    const topics = await topicModel.find({});
+    res.status(200).json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Sucessfully get all topic",
+        Topics: topics,
+      },
+    });
   } catch (error) {
-    console.error("Error while getting topics:", error);
     next(createError(500, "Server error while getting the topics"));
   }
 };

@@ -20,7 +20,7 @@ const createCTF = async (req, res, next) => {
 
   // Validating
   if (
-    !questionName||
+    !questionName ||
     !introduction ||
     !topic ||
     !requirements ||
@@ -29,23 +29,22 @@ const createCTF = async (req, res, next) => {
     !scenerio ||
     !question ||
     !answer ||
-    !points || !hints
+    !points ||
+    !hints
   ) {
     const error = createError(400, "All fields are required.");
     return next(error);
   }
 
   try {
-    // Finding the topic id
     const dbTopic = await topicModel.findOne({ topic });
     if (!dbTopic) {
       return next(createError(400, "Topic not found."));
     }
-    //GET ID
     const topicId = dbTopic._id;
     const createdBy = new mongoose.Types.ObjectId(req.user.sub);
 
-    const questionNameExist = await ctfModel.find({ questionName });
+    const questionNameExist = await ctfModel.findOne({ questionName });
     if (questionNameExist) {
       return next(createError(400, "Question Already Exist."));
     }
@@ -62,11 +61,16 @@ const createCTF = async (req, res, next) => {
       answer,
       points,
       hints,
-      createdBy
+      createdBy,
     });
     res.status(200).json({
-      message: "Question Created successfully",
-      newQuestion
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Question Created successfully",
+        Questions: newQuestion,
+      },
     });
   } catch (error) {
     next(createError(500, "Server Error while creating new Question."));
@@ -75,8 +79,16 @@ const createCTF = async (req, res, next) => {
 
 const getCTF = async (req, res, next) => {
   try {
-    const allCTF = await ctfModel.find();
-    res.status(200).json(allCTF);
+    const allCTF = await ctfModel.find({});
+    res.status(200).json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Sucessfully fetch all ctf",
+        all_Ctf: allCTF,
+      },
+    });
   } catch (error) {
     next(createError(500, "Server Error while getting CTF."));
   }
@@ -85,7 +97,6 @@ const getCTF = async (req, res, next) => {
 const getCTFByTopic = async (req, res, next) => {
   const topicId = req.params.id;
   try {
-    //coverting to object id to ensure that matching id in mango db
     const allCTFByTopic = await ctfModel.find({
       topicId: new mongoose.Types.ObjectId(topicId),
     });
@@ -94,7 +105,15 @@ const getCTFByTopic = async (req, res, next) => {
       return next(createError(400, "CTF Topic Not Found."));
     }
 
-    res.status(200).json(allCTFByTopic);
+    res.status(200).json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "CTF by topic",
+        CTFByTopic: allCTFByTopic,
+      },
+    });
   } catch (error) {
     next(
       createError(500, "Server Error while getting CTF Questions by Topic.")

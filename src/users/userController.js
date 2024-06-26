@@ -32,7 +32,6 @@ const registerUser = async (req, res, next) => {
       const error = createError(400, "Email is already registered.");
       return next(error);
     }
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await userModel.create({
       fullname,
@@ -103,10 +102,15 @@ const loginUser = async (req, res, next) => {
     delete userObj.refreshToken;
 
     res.status(200).json({
-      message: "User Login Sucessfully",
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      user: userObj,
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "User Login Sucessfully",
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        user_data: userObj,
+      },
     });
   } catch (error) {
     return next(createError(500, "Server error while login."));
@@ -160,7 +164,12 @@ const refreshAccessToken = async (req, res, next) => {
   });
 
   res.status(200).json({
-    message: "Access token refreshed successfully",
+    StatusCode: 200,
+    IsSuccess: true,
+    ErrorMessage: [],
+    Result: {
+      message: "Access token refreshed successfully",
+    },
   });
 };
 
@@ -181,21 +190,22 @@ const handleLogout = async (req, res, next) => {
           return next(err);
         }
       });
-      // Clear the refresh token cookie
       res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "Strict",
+        options,
       });
 
-      // Clear the access token cookie
       res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "Strict",
+        options,
       });
 
-      res.status(200).json({ message: "Logout successfull" });
+      res.status(200).json({
+        StatusCode: 200,
+        IsSuccess: true,
+        ErrorMessage: [],
+        Result: {
+          message: "Logout successfull",
+        },
+      });
     }
   } catch (error) {
     next(createError(500, "Server error while logging out."));
