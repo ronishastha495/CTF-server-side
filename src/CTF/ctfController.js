@@ -6,6 +6,7 @@ const topicModel = require("../ctf-topic/topicModel");
 const createCTF = async (req, res, next) => {
   const {
     topic,
+    questionName,
     introduction,
     requirements,
     link,
@@ -19,6 +20,7 @@ const createCTF = async (req, res, next) => {
 
   // Validating
   if (
+    !questionName||
     !introduction ||
     !topic ||
     !requirements ||
@@ -41,9 +43,16 @@ const createCTF = async (req, res, next) => {
     }
     //GET ID
     const topicId = dbTopic._id;
+    const createdBy = new mongoose.Types.ObjectId(req.user.sub);
 
-    await ctfModel.create({
+    const questionNameExist = await ctfModel.find({ questionName });
+    if (questionNameExist) {
+      return next(createError(400, "Question Already Exist."));
+    }
+
+    const newQuestion = await ctfModel.create({
       topicId,
+      questionName,
       introduction,
       requirements,
       link,
@@ -53,10 +62,11 @@ const createCTF = async (req, res, next) => {
       answer,
       points,
       hints,
+      createdBy
     });
-
     res.status(200).json({
       message: "Question Created successfully",
+      newQuestion
     });
   } catch (error) {
     next(createError(500, "Server Error while creating new Question."));

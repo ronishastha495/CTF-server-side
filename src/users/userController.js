@@ -1,10 +1,12 @@
 const createError = require("http-errors");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const userModel = require("./userModel");
+const { generateAccessToken, generateRefreshToken } = require("../utils/auth");
 const config = require("../config/config");
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
   const { fullname, username, email, password, role } = req.body;
@@ -42,11 +44,17 @@ const registerUser = async (req, res, next) => {
 
     res.status(200).json({
       message: "User registered sucessfully",
-      newUser,
+      data: newUser,
     });
   } catch (error) {
     next(createError(500, "Server Error while creating new user."));
   }
+};
+
+const options = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "Strict",
 };
 
 const loginUser = async (req, res, next) => {
@@ -65,16 +73,89 @@ const loginUser = async (req, res, next) => {
     if (!passMatch) {
       return next(createError(401, "Incorrect email and password !"));
     }
-    const token = jwt.sign({ sub: user._id }, config.jwtSecret, {
-      expiresIn: "1d",
+
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    res.cookie("refreshToken", refreshToken, {
+      options,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    res.cookie("accessToken", accessToken, {
+      options,
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+    });
+    user.refreshToken = refreshToken;
+    try {
+      await user.save();
+    } catch (error) {
+      console.log("Error saving user: ", error);
+    }
+
+    const userObj = user.toObject();
+    delete userObj.password;
+    delete userObj.refreshToken;
+
     res.status(200).json({
       message: "User Login Sucessfully",
-      accessToken: token,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      user: userObj,
     });
   } catch (error) {
     return next(createError(500, "Server error while login."));
   }
+};
+
+const refreshAccessToken = async (req, res, next) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    return next(createError(401, "Unauthorized request: No token provided"));
+  }
+
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(incomingRefreshToken, config.refreshTokenSecret);
+  } catch (error) {
+    return next(createError(401, "Invalid refresh token"));
+  }
+
+  const user = await userModel.findById(decodedToken.sub);
+  if (!user) {
+    return next(createError(401, "Invalid refresh token"));
+  }
+
+  if (incomingRefreshToken !== user.refreshToken) {
+    return next(createError(401, "Refresh token is expired or used"));
+  }
+
+  const accessToken = generateAccessToken(user._id);
+  const newRefreshToken = generateRefreshToken(user._id);
+  user.refreshToken = newRefreshToken;
+
+  try {
+    const newUser = await user.save();
+    console.log("Login user data:", newUser);
+  } catch (error) {
+    return next(createError(500, "Server error while saving user."));
+  }
+
+  res.cookie("accessToken", accessToken, {
+    options,
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie("refreshToken", newRefreshToken, {
+    options,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.status(200).json({
+    message: "Access token refreshed successfully",
+  });
 };
 
 const getAllUsers = async (req, res, next) => {
@@ -83,6 +164,36 @@ const getAllUsers = async (req, res, next) => {
     res.json(user);
   } catch (error) {
     return next(createError(500, "Server error while fetching users."));
+  }
+};
+
+
+const handleLogout = async (req, res, next) => {
+  try {
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          return next(err);
+        }
+      });
+      // Clear the refresh token cookie
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      // Clear the access token cookie
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      res.status(200).json({ message: "Logout successfull" });
+    }
+  } catch (error) {
+    next(createError(500, "Server error while logging out."));
   }
 };
 
@@ -102,6 +213,8 @@ const getUserById = async (req, res, next) => {
 module.exports = {
   registerUser,
   loginUser,
+  handleLogout,
   getAllUsers,
   getUserById,
+  refreshAccessToken,
 };

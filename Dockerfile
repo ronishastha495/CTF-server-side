@@ -1,11 +1,13 @@
-FROM node:20
+FROM node:alpine
 
-WORKDIR /CTF_server
+WORKDIR /usr/src/app
 
-COPY ./package*.json ./
-RUN npm install
+COPY package*.json .
+
+RUN npm ci
 
 COPY . .
 
 EXPOSE 5300
-CMD ["npm", "run", "dev"]
+
+CMD [ "npm", "run", "dev" ]
