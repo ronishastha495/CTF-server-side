@@ -1,11 +1,9 @@
 const createError = require("http-errors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 const userModel = require("./userModel");
 const { generateAccessToken, generateRefreshToken } = require("../utils/auth");
 const config = require("../config/config");
-const UserModel = require("./userModel");
 
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -166,6 +164,36 @@ const getAllUsers = async (req, res, next) => {
     res.json(user);
   } catch (error) {
     return next(createError(500, "Server error while fetching users."));
+  }
+};
+
+
+const handleLogout = async (req, res, next) => {
+  try {
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          return next(err);
+        }
+      });
+      // Clear the refresh token cookie
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      // Clear the access token cookie
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      res.status(200).json({ message: "Logout successfull" });
+    }
+  } catch (error) {
+    next(createError(500, "Server error while logging out."));
   }
 };
 
