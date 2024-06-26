@@ -1,7 +1,11 @@
 const createError = require("http-errors");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const userModel = require("./userModel");
 const { generateAccessToken, generateRefreshToken } = require("../utils/auth");
+const config = require("../config/config");
+const UserModel = require("./userModel");
 
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -49,6 +53,12 @@ const registerUser = async (req, res, next) => {
   }
 };
 
+const options = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "Strict",
+};
+
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -67,43 +77,87 @@ const loginUser = async (req, res, next) => {
     }
 
     const accessToken = generateAccessToken(user._id);
-    console.log(accessToken);
     const refreshToken = generateRefreshToken(user._id);
-    console.log(refreshToken);
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
+      options,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
+      options,
       maxAge: 1 * 24 * 60 * 60 * 1000,
     });
-
+    user.refreshToken = refreshToken;
     try {
-      const savedUser = await user.save();
-      console.log("User saved successfully:", savedUser);
+      await user.save();
     } catch (error) {
       console.log("Error saving user: ", error);
     }
 
-    const userData = user.toObject();
-    delete userData.password;
+    const userObj = user.toObject();
+    delete userObj.password;
+    delete userObj.refreshToken;
 
     res.status(200).json({
       message: "User Login Sucessfully",
       accessToken: accessToken,
       refreshToken: refreshToken,
-      user: userData,
+      user: userObj,
     });
   } catch (error) {
     return next(createError(500, "Server error while login."));
   }
+};
+
+const refreshAccessToken = async (req, res, next) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    return next(createError(401, "Unauthorized request"));
+  }
+
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(incomingRefreshToken, config.refreshTokenSecret);
+  } catch (error) {
+    return next(createError(401, "Invalid refresh token"));
+  }
+
+  const user = await userModel.findById(decodedToken.sub);
+  if (!user) {
+    return next(createError(401, "Invalid refresh token"));
+  }
+
+  if (incomingRefreshToken !== user.refreshToken) {
+    return next(createError(401, "Refresh token is expired or used"));
+  }
+
+  const accessToken = generateAccessToken(user._id);
+  const newRefreshToken = generateRefreshToken(user._id);
+  user.refreshToken = newRefreshToken;
+
+  try {
+    const user = await user.save();
+    console.log("Which ?", user);
+  } catch (error) {
+    return next(createError(500, "Server error while saving user."));
+  }
+
+  res.cookie("accessToken", accessToken, {
+    options,
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie("refreshToken", newRefreshToken, {
+    options,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.status(200).json({
+    message: "Access token refreshed successfully",
+  });
 };
 
 const getAllUsers = async (req, res, next) => {
@@ -133,4 +187,5 @@ module.exports = {
   loginUser,
   getAllUsers,
   getUserById,
+  refreshAccessToken,
 };
