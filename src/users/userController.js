@@ -1,7 +1,6 @@
 const createError = require("http-errors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 const userModel = require("./userModel");
 const { generateAccessToken, generateRefreshToken } = require("../utils/auth");
 const config = require("../config/config");
@@ -168,6 +167,36 @@ const getAllUsers = async (req, res, next) => {
   }
 };
 
+
+const handleLogout = async (req, res, next) => {
+  try {
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          return next(err);
+        }
+      });
+      // Clear the refresh token cookie
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      // Clear the access token cookie
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      res.status(200).json({ message: "Logout successfull" });
+    }
+  } catch (error) {
+    next(createError(500, "Server error while logging out."));
+  }
+};
+
 const getUserById = async (req, res, next) => {
   const userId = req.params.id;
   try {
@@ -184,6 +213,7 @@ const getUserById = async (req, res, next) => {
 module.exports = {
   registerUser,
   loginUser,
+  handleLogout,
   getAllUsers,
   getUserById,
   refreshAccessToken,

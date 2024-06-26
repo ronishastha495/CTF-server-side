@@ -7,4 +7,4 @@ const topicRouter = express.Router();
 topicRouter.post("/createTopic",authenticateToken, isAdmin, createTopic);
 topicRouter.get("/getAllTopic",authenticateToken, isAdmin, getTopic);
 
-module.exports = { topicRouter };
+module.exports =  topicRouter ;
