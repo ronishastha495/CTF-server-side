@@ -113,7 +113,6 @@ const loginUser = async (req, res, next) => {
 const refreshAccessToken = async (req, res, next) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
-    console.log('Incoming',incomingRefreshToken)
 
   if (!incomingRefreshToken) {
     return next(createError(401, "Unauthorized request: No token provided"));
