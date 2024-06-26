@@ -113,9 +113,10 @@ const loginUser = async (req, res, next) => {
 const refreshAccessToken = async (req, res, next) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
+    console.log('Incoming',incomingRefreshToken)
 
   if (!incomingRefreshToken) {
-    return next(createError(401, "Unauthorized request"));
+    return next(createError(401, "Unauthorized request: No token provided"));
   }
 
   let decodedToken;
@@ -139,8 +140,8 @@ const refreshAccessToken = async (req, res, next) => {
   user.refreshToken = newRefreshToken;
 
   try {
-    const user = await user.save();
-    console.log("Which ?", user);
+    const newUser = await user.save();
+    console.log("Which ?", newUser);
   } catch (error) {
     return next(createError(500, "Server error while saving user."));
   }
