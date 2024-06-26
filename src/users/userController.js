@@ -85,6 +85,11 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+const handleLogout = async (req, res, next) => {
+  // handle logout
+  
+};
+
 const getAllUsers = async (req, res, next) => {
   try {
     const user = await userModel.find({});
@@ -110,6 +115,7 @@ const getUserById = async (req, res, next) => {
 module.exports = {
   registerUser,
   loginUser,
+  handleLogout,
   getAllUsers,
   getUserById,
 };
