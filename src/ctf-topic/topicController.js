@@ -1,7 +1,9 @@
 const createError = require("http-errors");
 const topicModel = require("./topicModel");
+const userModel = require("../users/userModel");
 
 const createTopic = async (req, res, next) => {
+  
   const { topic, description } = req.body;
   if (!topic || !description) {
     const error = createError(400, "Please, Fill all the feilds.");
