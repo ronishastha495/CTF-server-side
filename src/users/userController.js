@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const userModel = require("./userModel");
 const { generateAccessToken, generateRefreshToken } = require("../utils/auth");
 const config = require("../config/config");
-const UserModel = require("./userModel");
 
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -140,7 +139,7 @@ const refreshAccessToken = async (req, res, next) => {
 
   try {
     const newUser = await user.save();
-    console.log("Which ?", newUser);
+    console.log("Login user data:", newUser);
   } catch (error) {
     return next(createError(500, "Server error while saving user."));
   }
