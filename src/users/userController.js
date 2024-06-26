@@ -42,7 +42,7 @@ const registerUser = async (req, res, next) => {
 
     res.status(200).json({
       message: "User registered sucessfully",
-      newUser,
+      data: newUser,
     });
   } catch (error) {
     next(createError(500, "Server Error while creating new user."));
@@ -67,8 +67,24 @@ const loginUser = async (req, res, next) => {
     }
 
     const accessToken = generateAccessToken(user._id);
+    console.log(accessToken);
     const refreshToken = generateRefreshToken(user._id);
-    user.refreshToken = refreshToken;
+    console.log(refreshToken);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+    });
+
     try {
       const savedUser = await user.save();
       console.log("User saved successfully:", savedUser);
@@ -76,12 +92,16 @@ const loginUser = async (req, res, next) => {
       console.log("Error saving user: ", error);
     }
 
+    const userData = user.toObject();
+    delete userData.password;
+
     res.status(200).json({
       message: "User Login Sucessfully",
       accessToken: accessToken,
+      refreshToken: refreshToken,
+      user: userData,
     });
   } catch (error) {
-    console.error("Error while logging in:", error);
     return next(createError(500, "Server error while login."));
   }
 };
