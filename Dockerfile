@@ -1,22 +1,13 @@
-# Use a Node.js version that supports ??= operator
-FROM node:16-alpine
+FROM node:alpine
 
-WORKDIR /ctf-server-side
+WORKDIR /usr/src/app
 
-COPY package.json package-lock.json ./
+COPY package*.json .
 
-RUN apk update \
-    && apk add --no-cache --virtual .build-deps \
-        python3 \
-        make \
-        g++ \
-    && npm install \
-    && npm rebuild bcrypt --build-from-source \
-    && apk del .build-deps
+RUN npm ci
 
-COPY src ./src
-COPY .env ./
+COPY . .
 
 EXPOSE 5300
 
-CMD ["npm", "run", "dev"]
+CMD [ "npm", "run", "dev" ]

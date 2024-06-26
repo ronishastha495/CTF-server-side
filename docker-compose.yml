@@ -1,13 +1,38 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  ctf_server:
-    image: ctf_server_image
+  # MongoDB service
+  mongo_db: 
+    container_name: db_container
+    image: mongo:latest
+    restart: always
     ports:
-      - "5300:5300" 
-    env_file:
-      - .env
-    depends_on: [] 
+      - 2717:27017
+    volumes:
+      - mongo_db:/data/db
+
+  # Node API service
+  api:
+    build: .
+    ports:
+      - 5300:5300
+    environment:
+      - PORT=5300
+      - MONGO_URI=mongodb://mongo_db:27017/ctf-server
+      - NODE_ENV=development
+      - JWT_SECRET=s3cr3tK3yf0rJWTign1ng
+      - REFRESH_TOKEN=R3fr3shT0k3nS3cr3tK3y
+      - DB_HOST=localhost
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=ctf-server
+      - DB_PORT=27017
+      - NODE_DOCKER_PORT=5300
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongo_db
 
 volumes:
-  mongo_data:
+  mongo_db: {}

@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Routes
 app.get("/home", (req, res, next) => {
-  res.json({ message: "Welcome to Raja.." });
+  res.json({ message: "Welcome to CTF HOME!!" });
 });
 
 app.use("/api/users", userRouter);
