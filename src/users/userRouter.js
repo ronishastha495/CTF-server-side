@@ -15,8 +15,8 @@ const userRouter = express.Router();
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
 userRouter.post("/logout", handleLogout);
-userRouter.get("/", authenticateToken, isAdmin, getAllUsers);
+userRouter.get("/getAlluser", authenticateToken, isAdmin, getAllUsers);
 userRouter.get("/:id", authenticateToken, verifyUserId, isUser, getUserById);
-userRouter.post("/refresh-token", refreshAccessToken);
+userRouter.post("/refresh", refreshAccessToken);
 
 module.exports = userRouter;

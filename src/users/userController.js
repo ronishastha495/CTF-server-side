@@ -118,65 +118,47 @@ const loginUser = async (req, res, next) => {
 };
 
 const refreshAccessToken = async (req, res, next) => {
-  const incomingRefreshToken =
-    req.cookies.refreshToken || req.body.refreshToken;
-  console.log(incomingRefreshToken);
+  const incomingAccessToken = req.body.accessToken;
 
-  if (!incomingRefreshToken) {
-    return next(createError(401, "Unauthorized request: No token provided"));
+  if (!incomingAccessToken) {
+    return next(
+      createError(401, "Unauthorized request: No access token provided")
+    );
   }
 
   let decodedToken;
   try {
-    decodedToken = jwt.verify(incomingRefreshToken, config.refreshTokenSecret);
+    decodedToken = jwt.verify(incomingAccessToken, config.jwtSecret);
   } catch (error) {
-    return next(createError(401, "Invalid refresh token"));
+    return next(createError(401, "Invalid access token"));
   }
 
-  const user = await userModel.findById(decodedToken.sub);
-  if (!user) {
-    return next(createError(401, "Invalid refresh token"));
-  }
+  const userId = decodedToken.sub;
 
-  if (incomingRefreshToken !== user.refreshToken) {
-    return next(createError(401, "Refresh token is expired or used"));
-  }
-
-  const accessToken = generateAccessToken(user._id);
-  const newRefreshToken = generateRefreshToken(user._id);
-  user.refreshToken = newRefreshToken;
-
-  try {
-    const newUser = await user.save();
-    console.log("Login user data:", newUser);
-  } catch (error) {
-    return next(createError(500, "Server error while saving user."));
-  }
-
-  res.cookie("accessToken", accessToken, {
-    options,
-    maxAge: 1 * 24 * 60 * 60 * 1000,
-  });
+  const newRefreshToken = generateRefreshToken(userId);
 
   res.cookie("refreshToken", newRefreshToken, {
     options,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 1 * 60 * 60 * 1000,
   });
 
   res.status(200).json({
-    StatusCode: 200,
-    IsSuccess: true,
-    ErrorMessage: [],
-    Result: {
-      message: "Access token refreshed successfully",
-    },
+    refreshToken: newRefreshToken,
   });
 };
 
 const getAllUsers = async (req, res, next) => {
   try {
     const user = await userModel.find({});
-    res.json(user);
+    res.json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Successfully fetch all users",
+        All_user: user,
+      },
+    });
   } catch (error) {
     return next(createError(500, "Server error while fetching users."));
   }

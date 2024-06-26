@@ -4,16 +4,15 @@ const config = require("../config/config");
 
 const authenticateToken = (req, res, next) => {
   const { refreshToken } = req.cookies;
-  console.log(refreshToken);
   if (!refreshToken) {
     return res.status(401).send("Refresh Token not found");
   }
 
   const authHeader = req.header("Authorization");
-  if (!authHeader) return res.status(401).send("Access Denied");
+  if (!authHeader) return res.status(401).send("Access Denied!");
 
   const token = authHeader.split(" ")[1];
-  if (!token) return res.status(401).send("Access Denied");
+  if (!token) return res.status(401).send("Token is not valid");
 
   try {
     const verified = jwt.verify(token, config.jwtSecret);
@@ -26,7 +25,7 @@ const authenticateToken = (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
   const user = await userModel.findById(req.user.sub);
-  if (user.role !== "admin") return res.status(403).send("Access Denied");
+  if (user.role !== "admin") return res.status(403).send("You are not admin.");
   next();
 };
 
