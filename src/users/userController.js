@@ -43,8 +43,13 @@ const registerUser = async (req, res, next) => {
     });
 
     res.status(200).json({
-      message: "User registered sucessfully",
-      data: newUser,
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "User registered sucessfully",
+        user_data: newUser,
+      },
     });
   } catch (error) {
     next(createError(500, "Server Error while creating new user."));
@@ -111,6 +116,7 @@ const loginUser = async (req, res, next) => {
 const refreshAccessToken = async (req, res, next) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
+  console.log(incomingRefreshToken);
 
   if (!incomingRefreshToken) {
     return next(createError(401, "Unauthorized request: No token provided"));
@@ -166,7 +172,6 @@ const getAllUsers = async (req, res, next) => {
     return next(createError(500, "Server error while fetching users."));
   }
 };
-
 
 const handleLogout = async (req, res, next) => {
   try {
