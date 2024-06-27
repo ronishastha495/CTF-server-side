@@ -1,3 +1,4 @@
+const createError = require("http-errors");
 const jwt = require("jsonwebtoken");
 const userModel = require("../users/userModel");
 const config = require("../config/config");
@@ -5,42 +6,58 @@ const config = require("../config/config");
 const authenticateToken = (req, res, next) => {
   const { refreshToken } = req.cookies;
   if (!refreshToken) {
-    return res.status(401).send("Refresh Token not found");
+    return next(createError(401, "Refresh Token not found"));
   }
 
   const authHeader = req.header("Authorization");
-  if (!authHeader) return res.status(401).send("Access Denied!");
+  if (!authHeader) {
+    return next(createError(401, "Access Denied!"));
+  }
 
   const token = authHeader.split(" ")[1];
-  if (!token) return res.status(401).send("Token is not valid");
+  if (!token) {
+    return next(createError(401, "Token is not valid"));
+  }
 
   try {
     const verified = jwt.verify(token, config.jwtSecret);
     req.user = verified;
     next();
   } catch (err) {
-    res.status(400).send("Invalid Token");
+    next(createError(400, "Invalid Token"));
   }
 };
 
 const isAdmin = async (req, res, next) => {
-  const user = await userModel.findById(req.user.sub);
-  if (user.role !== "admin") return res.status(403).send("You are not admin.");
-  next();
+  try {
+    const user = await userModel.findById(req.user.sub);
+    if (!user || user.role !== "admin") {
+      return next(createError(403, "You are not admin."));
+    }
+    next();
+  } catch (err) {
+    next(createError(500, "Server Error"));
+  }
 };
 
 const verifyUserId = (req, res, next) => {
   const userId = req.params.id;
   if (req.user.sub !== userId) {
-    return res.status(403).send("Access Denied. User ID does not match.");
+    return next(createError(403, "Access Denied. User ID does not match."));
   }
   next();
 };
 
 const isUser = async (req, res, next) => {
-  const user = await userModel.findById(req.user.sub);
-  if (user.role !== "user") return res.status(403).send("Access Denied");
-  next();
+  try {
+    const user = await userModel.findById(req.user.sub);
+    if (!user || user.role !== "user") {
+      return next(createError(403, "Access Denied"));
+    }
+    next();
+  } catch (err) {
+    next(createError(500, "Server Error"));
+  }
 };
 
 module.exports = { authenticateToken, isAdmin, isUser, verifyUserId };
