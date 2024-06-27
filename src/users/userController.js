@@ -51,12 +51,6 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-const options = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "Strict",
-};
-
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
