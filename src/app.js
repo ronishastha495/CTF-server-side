@@ -8,6 +8,7 @@ const globalErrorHandler = require("./middlewares/globalErrorHandler");
 const userRouter = require("./users/userRouter");
 const ctfRouter = require("./ctf/ctfRouter");
 const topicRouter = require("./ctf-topic/topicRouter");
+const questionRouter = require("./questions/questionRouter");
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ app.get("/home", (req, res, next) => {
 app.use("/api/users", userRouter);
 app.use("/api/ctf", ctfRouter);
 app.use("/api/topic", topicRouter);
+app.use("/api/question", questionRouter);
 
 app.use(globalErrorHandler);
 
