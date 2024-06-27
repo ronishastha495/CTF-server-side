@@ -166,26 +166,30 @@ const getAllUsers = async (req, res, next) => {
 
 const handleLogout = async (req, res, next) => {
   try {
+    res.clearCookie("refreshToken", options);
+    res.clearCookie("accessToken", options);
+
     if (req.session) {
       req.session.destroy((err) => {
         if (err) {
           return next(err);
         }
+        res.status(200).json({
+          StatusCode: 200,
+          IsSuccess: true,
+          ErrorMessage: [],
+          Result: {
+            message: "Logout successful",
+          },
+        });
       });
-      res.clearCookie("refreshToken", {
-        options,
-      });
-
-      res.clearCookie("accessToken", {
-        options,
-      });
-
+    } else {
       res.status(200).json({
         StatusCode: 200,
         IsSuccess: true,
         ErrorMessage: [],
         Result: {
-          message: "Logout successfull",
+          message: "Logout successful",
         },
       });
     }
@@ -193,6 +197,7 @@ const handleLogout = async (req, res, next) => {
     next(createError(500, "Server error while logging out."));
   }
 };
+
 
 const getUserById = async (req, res, next) => {
   const userId = req.params.id;
