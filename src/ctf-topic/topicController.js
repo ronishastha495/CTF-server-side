@@ -82,7 +82,33 @@ const getSingleTopic = async (req, res, next) => {
   }
 };
 
-// Delete topic
+const updateTopic = async (req, res, next) => {
+  const { id } = req.params;
+  const { topic, description } = req.body;
+  const updatedBy = new mongoose.Types.ObjectId(req.user.sub);
+  try {
+    const updatedTopic = await topicModel.findByIdAndUpdate(
+      id,
+      { topic, description, updatedBy},
+      { new: true }
+    );
+    if (updatedTopic.length <= 0) {
+      return next(createError(404, "Topic details not found"));
+    }
+    res.status(200).json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Successfully updated topic",
+        Topic: updatedTopic,
+      },
+    });
+  } catch (error) {
+    next(createError(500, "Server error while updating the topic"));
+  }
+};
+
 const deleteTopic = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -102,12 +128,12 @@ const deleteTopic = async (req, res, next) => {
   } catch (error) {
     next(createError(500, "Server error while deleting the topic"));
   }
-}
-
+};
 
 module.exports = {
   createTopic,
   getTopic,
   getSingleTopic,
-  deleteTopic
+  updateTopic,
+  deleteTopic,
 };
