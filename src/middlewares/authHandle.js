@@ -4,9 +4,9 @@ const userModel = require("../users/userModel");
 const config = require("../config/config");
 
 const authenticateToken = (req, res, next) => {
-  const { refreshToken } = req.cookies;
-  if (!refreshToken) {
-    return next(createError(401, "Refresh Token not found"));
+  const { accessToken } = req.cookies;
+  if (!accessToken) {
+    return next(createError(401, "Access Token not found"));
   }
 
   const authHeader = req.header("Authorization");
