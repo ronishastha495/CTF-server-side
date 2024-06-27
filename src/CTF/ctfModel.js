@@ -6,6 +6,10 @@ const ctfModelSchema = new mongoose.Schema(
       ref: "Topic",
       required: true,
     },
+    questionName: {
+      type: String,
+      required: true,
+    },
     introduction: {
       type: String,
       required: true,
@@ -38,6 +42,15 @@ const ctfModelSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    hints: {
+      type: String,
+      required : true
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    }
   },
   { timestamps: true }
 );
