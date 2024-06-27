@@ -118,32 +118,32 @@ const loginUser = async (req, res, next) => {
 };
 
 const refreshAccessToken = async (req, res, next) => {
-  const incomingAccessToken = req.body.accessToken;
+  const incomingAccessToken = req.body.refreshToken;
 
   if (!incomingAccessToken) {
     return next(
-      createError(401, "Unauthorized request: No access token provided")
+      createError(401, "Unauthorized request: No refresh token provided")
     );
   }
 
   let decodedToken;
   try {
-    decodedToken = jwt.verify(incomingAccessToken, config.jwtSecret);
+    decodedToken = jwt.verify(incomingAccessToken, config.refreshTokenSecret);
   } catch (error) {
-    return next(createError(401, "Invalid access token"));
+    return next(createError(401, "Invalid refresh token"));
   }
 
   const userId = decodedToken.sub;
 
-  const newRefreshToken = generateRefreshToken(userId);
+  const newAccessToken = generateAccessToken(userId);
 
-  res.cookie("refreshToken", newRefreshToken, {
+  res.cookie("accessToken", newAccessToken, {
     options,
     maxAge: 1 * 60 * 60 * 1000,
   });
 
   res.status(200).json({
-    refreshToken: newRefreshToken,
+    accessToken: newAccessToken,
   });
 };
 
