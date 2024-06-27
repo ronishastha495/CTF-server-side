@@ -42,21 +42,72 @@ const createTopic = async (req, res, next) => {
 const getTopic = async (req, res, next) => {
   try {
     const topics = await topicModel.find({});
+    const message =
+      topics.length >= 0
+        ? "Successfully fetched all topics"
+        : "No topics were created";
+
     res.status(200).json({
       StatusCode: 200,
       IsSuccess: true,
       ErrorMessage: [],
       Result: {
-        message: "Sucessfully get all topic",
+        message,
         Topics: topics,
       },
     });
   } catch (error) {
-    next(createError(500, "Server error while getting the topics"));
+    next(createError(500, "Server error while fetching the topics"));
   }
 };
+
+const getSingleTopic = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const topicDetails = await topicModel.findById(id);
+    if (topicDetails.length <= 0) {
+      return next(createError(404, "Topic details not found"));
+    }
+    res.status(200).json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Successfully got single topic",
+        Topic: topicDetails,
+      },
+    });
+  } catch (error) {
+    next(createError(500, "Server error while getting the topic"));
+  }
+};
+
+// Delete topic
+const deleteTopic = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const deletedTopic = await topicModel.findByIdAndDelete(id);
+    if (deletedTopic.length <= 0) {
+      return next(createError(404, "Topic details not found"));
+    }
+    res.status(200).json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "Successfully deleted topic",
+        Topic: deletedTopic,
+      },
+    });
+  } catch (error) {
+    next(createError(500, "Server error while deleting the topic"));
+  }
+}
+
 
 module.exports = {
   createTopic,
   getTopic,
+  getSingleTopic,
+  deleteTopic
 };

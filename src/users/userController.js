@@ -9,8 +9,8 @@ const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
-  const { fullname, username, email, password, role } = req.body;
-  if (!fullname || !username || !email || !password) {
+  const { fullname, username, email, password, country, role } = req.body;
+  if (!fullname || !username || !email || !country || !password) {
     const error = createError(400, "All fields are required.");
     return next(error);
   }
@@ -38,6 +38,7 @@ const registerUser = async (req, res, next) => {
       username,
       email,
       password: hashedPassword,
+      country,
       role: role || "user",
     });
 
@@ -218,11 +219,32 @@ const getUserById = async (req, res, next) => {
   }
 };
 
+const handleUserDelete = async (req, res, next) => {
+  const userId = req.params.id;
+  try {
+    const user = await userModel.findByIdAndDelete(userId);
+    if (!user) {
+      return next(createError(404, "User not found."));
+    }
+    res.json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "User deleted successfully",
+      },
+    });
+  } catch (error) {
+    return next(createError(500, "Server error while deleting user."));
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
   handleLogout,
   getAllUsers,
   getUserById,
+  handleUserDelete,
   refreshAccessToken,
 };
