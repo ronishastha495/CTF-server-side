@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
@@ -11,6 +12,7 @@ const topicRouter = require("./ctf-topic/topicRouter");
 const app = express();
 app.use(cors());
 app.use(cookieParser());
+app.use(bodyParser.json());
 app.use(express.json());
 
 // Routes

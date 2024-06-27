@@ -55,12 +55,6 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-const options = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "Strict",
-};
-
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -82,13 +76,17 @@ const loginUser = async (req, res, next) => {
     const refreshToken = generateRefreshToken(user._id);
 
     res.cookie("refreshToken", refreshToken, {
-      options,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      maxAge: 1 * 60 * 60 * 1000,
     });
 
     res.cookie("accessToken", accessToken, {
-      options,
-      maxAge: 1 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      maxAge: 30 * 60 * 1000,
     });
     user.refreshToken = refreshToken;
     try {
@@ -118,9 +116,9 @@ const loginUser = async (req, res, next) => {
 };
 
 const refreshAccessToken = async (req, res, next) => {
-  const incomingAccessToken = req.body.refreshToken;
-
-  if (!incomingAccessToken) {
+  const incomingRefreshToken = req.body.refreshToken;
+  const previousAccessToken = req.cookies.accessToken;
+  if (!incomingRefreshToken) {
     return next(
       createError(401, "Unauthorized request: No refresh token provided")
     );
@@ -128,9 +126,9 @@ const refreshAccessToken = async (req, res, next) => {
 
   let decodedToken;
   try {
-    decodedToken = jwt.verify(incomingAccessToken, config.refreshTokenSecret);
+    decodedToken = jwt.verify(incomingRefreshToken, config.refreshTokenSecret);
   } catch (error) {
-    return next(createError(401, "Invalid refresh token"));
+    return next(createError(401, "Invalid access token"));
   }
 
   const userId = decodedToken.sub;
@@ -138,11 +136,14 @@ const refreshAccessToken = async (req, res, next) => {
   const newAccessToken = generateAccessToken(userId);
 
   res.cookie("accessToken", newAccessToken, {
-    options,
-    maxAge: 1 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: true,
+    sameSite: "Strict",
+    maxAge: 30 * 60 * 1000,
   });
 
   res.status(200).json({
+    previousAccessToken: previousAccessToken,
     accessToken: newAccessToken,
   });
 };
@@ -162,6 +163,12 @@ const getAllUsers = async (req, res, next) => {
   } catch (error) {
     return next(createError(500, "Server error while fetching users."));
   }
+};
+
+const options = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "Strict",
 };
 
 const handleLogout = async (req, res, next) => {
@@ -197,7 +204,6 @@ const handleLogout = async (req, res, next) => {
     next(createError(500, "Server error while logging out."));
   }
 };
-
 
 const getUserById = async (req, res, next) => {
   const userId = req.params.id;
