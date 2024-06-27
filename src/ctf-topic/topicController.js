@@ -56,6 +56,9 @@ const getTopic = async (req, res, next) => {
   }
 };
 
+
+
+
 module.exports = {
   createTopic,
   getTopic,

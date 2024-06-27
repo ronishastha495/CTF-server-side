@@ -9,8 +9,8 @@ const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
-  const { fullname, username, email, password, role } = req.body;
-  if (!fullname || !username || !email || !password) {
+  const { fullname, username, email, password, country, role } = req.body;
+  if (!fullname || !username || !email || !country || !password) {
     const error = createError(400, "All fields are required.");
     return next(error);
   }
@@ -38,6 +38,7 @@ const registerUser = async (req, res, next) => {
       username,
       email,
       password: hashedPassword,
+      country,
       role: role || "user",
     });
 
