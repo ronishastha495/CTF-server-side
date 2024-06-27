@@ -213,11 +213,32 @@ const getUserById = async (req, res, next) => {
   }
 };
 
+const handleUserDelete = async (req, res, next) => {
+  const userId = req.params.id;
+  try {
+    const user = await userModel.findByIdAndDelete(userId);
+    if (!user) {
+      return next(createError(404, "User not found."));
+    }
+    res.json({
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "User deleted successfully",
+      },
+    });
+  } catch (error) {
+    return next(createError(500, "Server error while deleting user."));
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
   handleLogout,
   getAllUsers,
   getUserById,
+  handleUserDelete,
   refreshAccessToken,
 };
