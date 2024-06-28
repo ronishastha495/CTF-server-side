@@ -43,16 +43,16 @@ const handleProgress = async (req, res, next) => {
       return next(createError(400, "Quiz question not found"));
     }
 
-    const alreadySolved = await UserProgress.findOne({
-      user: userId,
-      quiz: quizId,
-    });
-
-    if (alreadySolved) {
-      return next(createError(400, "Quiz already solved"));
-    }
-
     if (quizQuestion.answer === answer) {
+      const alreadySolved = await UserProgress.findOne({
+        user: userId,
+        quiz: quizId,
+      });
+
+      if (alreadySolved) {
+        return next(createError(400, "Flag already Captured"));
+      }
+
       const userProgress = new UserProgress({ user: userId, quiz: quizId });
       await userProgress.save();
 
@@ -67,13 +67,13 @@ const handleProgress = async (req, res, next) => {
         IsSuccess: true,
         ErrorMessage: [],
         Result: {
-          message: "Quiz solved successfully",
+          message: "Flag Captured successfully",
           points: points,
           Quiz: quizQuestion,
         },
       });
     } else {
-      return next(createError(400, "Incorrect answer"));
+      return next(createError(400, "Incorrect Answer"));
     }
   } catch (error) {
     next(
