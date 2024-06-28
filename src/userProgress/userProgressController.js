@@ -57,10 +57,12 @@ const handleProgress = async (req, res, next) => {
       await userProgress.save();
 
       const points = getPoints(questions.topic.difficulty);
-      user.solvedQuizzes.push(quizId);
+      user.solvedQuizzes.push(quizQuestion._id);
       user.rewards += points;
 
       await user.save();
+
+      const isComplete = user.solvedQuizzes.includes(quizQuestion._id);
 
       res.status(200).json({
         StatusCode: 200,
@@ -70,6 +72,7 @@ const handleProgress = async (req, res, next) => {
           message: "Flag Captured successfully",
           points: points,
           Quiz: quizQuestion,
+          isComplete: isComplete,
         },
       });
     } else {
