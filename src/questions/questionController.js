@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const createError = require("http-errors");
 const questionModel = require("./questionModel");
 const topicModel = require("../ctf-topic/topicModel");
