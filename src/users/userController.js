@@ -8,7 +8,7 @@ const config = require("../config/config");
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-const usernameRegex = /^[a-zA-Z0-9]{3,20}$/;
+  const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
 
 const registerUser = async (req, res, next) => {
   const { fullname, username, email, password, country, role } = req.body;
