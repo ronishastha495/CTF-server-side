@@ -8,6 +8,7 @@ const {
   updateQuestionSet,
   deleteSubQuestion,
   deleteQuestionSet,
+  getQuestionByTopic
 } = require("./questionController");
 
 const questionRouter = express.Router();
@@ -42,6 +43,13 @@ questionRouter.get(
   authenticateToken,
   isAdmin,
   getSingleQuestion
+);
+
+questionRouter.get(
+  "/getQuestionByTopic/:topicId",
+  authenticateToken,
+  isAdmin,
+  getQuestionByTopic
 );
 
 module.exports = questionRouter;
