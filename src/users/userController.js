@@ -8,6 +8,7 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$
 
 const registerUser = async (req, res, next) => {
   const { fullname, username, email, password, role } = req.body;
+  console.log(req.body);
   if (!fullname || !username || !email || !password) {
     const error = createError(400, "All fields are required.");
     return next(error);
@@ -50,7 +51,10 @@ const registerUser = async (req, res, next) => {
 };
 
 const loginUser = async (req, res, next) => {
+
   const { email, password } = req.body;
+
+  console.log(req.body);
 
   if (!email || !password) {
     return next(createError(400, "All feilds are required!"));
@@ -72,6 +76,7 @@ const loginUser = async (req, res, next) => {
       message: "User Login Sucessfully",
       accessToken: token,
     });
+    console.log("user successfully logged in !!")
   } catch (error) {
     return next(createError(500, "Server error while login."));
   }
