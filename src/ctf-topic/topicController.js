@@ -35,8 +35,12 @@ const createTopic = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error("Error while adding a new topic:", error);
-    next(createError(500, "Server error while adding a new topic"));
+    next(
+      createError(
+        500,
+        `Server error while adding a new topic. ${error.message}`
+      )
+    );
   }
 };
 
@@ -58,7 +62,12 @@ const getTopic = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(createError(500, "Server error while fetching the topics"));
+    next(
+      createError(
+        500,
+        `Server error while fetching the topics. ${error.message}`
+      )
+    );
   }
 };
 
@@ -79,7 +88,9 @@ const getSingleTopic = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(createError(500, "Server error while getting the topic"));
+    next(
+      createError(500, `Server error while getting the topic. ${error.message}`)
+    );
   }
 };
 
@@ -90,7 +101,7 @@ const updateTopic = async (req, res, next) => {
   try {
     const updatedTopic = await topicModel.findByIdAndUpdate(
       id,
-      { topic, description, difficulty, updatedBy},
+      { topic, description, difficulty, updatedBy },
       { new: true }
     );
     if (updatedTopic.length <= 0) {
@@ -106,7 +117,12 @@ const updateTopic = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(createError(500, "Server error while updating the topic"));
+    next(
+      createError(
+        500,
+        `Server error while updating the topic. ${error.message}`
+      )
+    );
   }
 };
 
@@ -127,7 +143,12 @@ const deleteTopic = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(createError(500, "Server error while deleting the topic"));
+    next(
+      createError(
+        500,
+        `Server error while deleting the topic. ${error.message}`
+      )
+    );
   }
 };
 
