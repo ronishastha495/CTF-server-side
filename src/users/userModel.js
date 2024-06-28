@@ -10,6 +10,10 @@ const userModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    country:{
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       unique: true,
@@ -19,10 +23,7 @@ const userModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    country:{
-      type: String,
-      required: true,
-    },
+
     role: {
       type: String,
       enum: ["user", "admin"],
