@@ -34,28 +34,25 @@ const handleProgress = async (req, res, next) => {
     if (!questions) {
       return next(createError(400, "Quiz not found"));
     }
-    console.log(questions);
 
     const quizQuestion = questions.quiz.find(
       (q) => q._id.toString() === quizId
     );
 
-    console.log(quizQuestion);
-
     if (!quizQuestion) {
       return next(createError(400, "Quiz question not found"));
     }
 
+    const alreadySolved = await UserProgress.findOne({
+      user: userId,
+      quiz: quizId,
+    });
+
+    if (alreadySolved) {
+      return next(createError(400, "Quiz already solved"));
+    }
+
     if (quizQuestion.answer === answer) {
-      const alreadySolved = await UserProgress.findOne({
-        user: userId,
-        quiz: quizId,
-      });
-
-      if (alreadySolved) {
-        return next(createError(400, "Quiz already solved"));
-      }
-
       const userProgress = new UserProgress({ user: userId, quiz: quizId });
       await userProgress.save();
 
