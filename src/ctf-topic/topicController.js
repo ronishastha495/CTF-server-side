@@ -3,7 +3,7 @@ const createError = require("http-errors");
 const topicModel = require("./topicModel");
 
 const createTopic = async (req, res, next) => {
-  const { topic, description } = req.body;
+  const { topic, description, difficulty } = req.body;
   if (!topic || !description) {
     const error = createError(400, "Please, fill all the fields.");
     return next(error);
@@ -21,6 +21,7 @@ const createTopic = async (req, res, next) => {
     const newTopic = await topicModel.create({
       topic,
       description,
+      difficulty,
       createdBy,
     });
 
@@ -84,12 +85,12 @@ const getSingleTopic = async (req, res, next) => {
 
 const updateTopic = async (req, res, next) => {
   const { id } = req.params;
-  const { topic, description } = req.body;
+  const { topic, description, difficulty } = req.body;
   const updatedBy = new mongoose.Types.ObjectId(req.user.sub);
   try {
     const updatedTopic = await topicModel.findByIdAndUpdate(
       id,
-      { topic, description, updatedBy},
+      { topic, description, difficulty, updatedBy},
       { new: true }
     );
     if (updatedTopic.length <= 0) {

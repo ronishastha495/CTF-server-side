@@ -19,7 +19,7 @@ const userModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    country:{
+    country: {
       type: String,
       required: true,
     },
@@ -27,6 +27,14 @@ const userModelSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    solvedQuizzes: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Question",
+    }],
+    rewards: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }
