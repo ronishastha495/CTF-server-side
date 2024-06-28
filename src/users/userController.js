@@ -9,9 +9,9 @@ const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
-  const { fullname, username, email, password, role } = req.body;
+  const { fullname, username,country,  email, password, role } = req.body;
   console.log(req.body);
-  if (!fullname || !username || !email || !password) {
+  if (!fullname || !username || !country || !email || !password) {
     const error = createError(400, "All fields are required.");
     return next(error);
   }
@@ -38,6 +38,7 @@ const registerUser = async (req, res, next) => {
     const newUser = await userModel.create({
       fullname,
       username,
+      country,
       email,
       password: hashedPassword,
       role: role || "user",
@@ -113,6 +114,7 @@ const loginUser = async (req, res, next) => {
     });
     console.log("user successfully logged in !!")
   } catch (error) {
+    console.log("error from login controller", error);
     return next(createError(500, "Server error while login."));
   }
 };
