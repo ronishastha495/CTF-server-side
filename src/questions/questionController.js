@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const createError = require("http-errors");
 const questionModel = require("./questionModel");
 const topicModel = require("../ctf-topic/topicModel");
@@ -7,36 +6,30 @@ const createQuestionSet = async (req, res, next) => {
   const { title, introduction, tools, scenario, process, quiz, topic } =
     req.body;
 
-  // Validate required fields
   if (!title || !quiz || !topic) {
     const error = createError(400, "Title, Questions, and Topic are required.");
     return next(error);
   }
 
   try {
-    // Check if title already exists
     const existingTitle = await questionModel.findOne({ title });
-
     if (existingTitle) {
       const error = createError(400, "Title already exists.");
       return next(error);
     }
 
-    // Check if introduction already exists
     const existingIntroduction = await questionModel.findOne({ introduction });
     if (existingIntroduction) {
       const error = createError(400, "Introduction already exists.");
       return next(error);
     }
 
-    // Check if topic exists
     const dbTopic = await topicModel.findOne({ topic });
 
     if (!dbTopic) {
       return next(createError(400, "Topic not found."));
     }
 
-    // Create new question set
     const newQuestionSet = await questionModel.create({
       title,
       introduction,
@@ -144,7 +137,6 @@ const deleteSubQuestion = async (req, res, next) => {
   const subQuestionId = req.params.subQuestionId;
 
   try {
-    // Find the parent question by ID
     const question = await questionModel.findById(questionId);
 
     if (!question) {
@@ -210,7 +202,7 @@ const getQuestionByTopic = async (req, res, next) => {
   if (!topicId) {
     return next(createError(400, "Invalid topic ID provided."));
   }
-  
+
   try {
     const questions = await questionModel.find({ topic: topicId });
     if (!questions || questions.length === 0) {
