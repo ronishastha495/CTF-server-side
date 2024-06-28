@@ -3,10 +3,10 @@ const questionModel = require("./questionModel");
 const topicModel = require("../ctf-topic/topicModel");
 
 const createQuestionSet = async (req, res, next) => {
-  const { title, introduction, tools, scenario, process, questions, topic } = req.body;
+  const { title, introduction, tools, scenario, process, quiz, topic } = req.body;
 
   // Validate required fields
-  if (!title || !questions || !topic) {
+  if (!title || !quiz || !topic) {
     const error = createError(400, "Title, Questions, and Topic are required.");
     return next(error);
   }
@@ -41,7 +41,7 @@ const createQuestionSet = async (req, res, next) => {
       tools,
       scenario,
       process,
-      questions,
+      quiz,
       topic: dbTopic._id,
     });
 
