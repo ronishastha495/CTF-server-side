@@ -6,6 +6,7 @@ const _config = {
   databaseUrl: process.env.MONGO_URI,
   env: process.env.NODE_ENV,
   jwtSecret: process.env.JWT_SECRET,
+  refreshTokenSecret: process.env.REFRESH_TOKEN,
 };
 
 module.exports = Object.freeze(_config);

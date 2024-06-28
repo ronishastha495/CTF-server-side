@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "start": "node ./server.js",
+    "dev": "nodemon --legacy-watch --inspect=0.0.0.0 ./server.js"
   },
   "keywords": [],
   "author": "",
@@ -11,6 +12,8 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "eslint": "^9.5.0",
@@ -19,7 +22,9 @@
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.3",
-    "nodemon": "^3.1.4",
     "prettier": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
   }
 }
