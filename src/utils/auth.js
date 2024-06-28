@@ -9,7 +9,7 @@ const generateAccessToken = (userId) => {
 
 const generateRefreshToken = (userId) => {
   return jwt.sign({ sub: userId }, config.refreshTokenSecret, {
-    expiresIn: "1h",
+    expiresIn: "24h",
   });
 };
 

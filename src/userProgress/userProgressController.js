@@ -5,12 +5,14 @@ const UserProgress = require("./userProgressModel");
 
 const getPoints = (difficulty) => {
   switch (difficulty) {
-    case "easy":
-      return 10;
-    case "medium":
-      return 20;
-    case "hard":
-      return 30;
+    case "Easy":
+      return 1;
+    case "Medium":
+      return 2;
+    case "Hard":
+      return 3;
+    case "Advanced":
+      return 5;
     default:
       return 0;
   }
@@ -26,22 +28,25 @@ const handleProgress = async (req, res, next) => {
       return next(createError(403, "User Not Found"));
     }
 
-    const questions = await questionModel.findOne({ "quiz._id": quizId });
-
+    const questions = await questionModel
+      .findOne({ "quiz._id": quizId })
+      .populate("topic");
     if (!questions) {
       return next(createError(400, "Quiz not found"));
     }
-    console.log(quiz);
+    console.log(questions);
 
-    const question = questions.quiz._id(quizId);
+    const quizQuestion = questions.quiz.find(
+      (q) => q._id.toString() === quizId
+    );
 
-    console.log("ok"+question);
+    console.log(quizQuestion);
 
-    if (!question) {
+    if (!quizQuestion) {
       return next(createError(400, "Quiz question not found"));
     }
 
-    if (question.answer === answer) {
+    if (quizQuestion.answer === answer) {
       const alreadySolved = await UserProgress.findOne({
         user: userId,
         quiz: quizId,
@@ -51,14 +56,13 @@ const handleProgress = async (req, res, next) => {
         return next(createError(400, "Quiz already solved"));
       }
 
-      // Save user progress
       const userProgress = new UserProgress({ user: userId, quiz: quizId });
       await userProgress.save();
 
-      // Update user rewards
-      const points = getPoints(quiz.topic.difficulty);
+      const points = getPoints(questions.topic.difficulty);
       user.solvedQuizzes.push(quizId);
       user.rewards += points;
+
       await user.save();
 
       res.status(200).json({
@@ -68,7 +72,7 @@ const handleProgress = async (req, res, next) => {
         Result: {
           message: "Quiz solved successfully",
           points: points,
-          Quiz: quiz,
+          Quiz: quizQuestion,
         },
       });
     } else {
