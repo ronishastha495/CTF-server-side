@@ -7,7 +7,7 @@ const questionSchema = new mongoose.Schema(
     tools: { type: String },
     scenario: { type: String },
     process: { type: String },
-    questions: [
+    quiz: [
       {
         question_text: { type: String, required: true },
         answer: { type: String, required: true },
