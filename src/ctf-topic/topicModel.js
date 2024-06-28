@@ -10,15 +10,20 @@ const topicSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    createdBy:{
+    difficulty: {
+      type: String,
+      required: true,
+      enum: ["Easy", "Medium", "Hard", "Advandced"],
+    },
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    updatedBy:{
+    updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: null
+      default: null,
     },
   },
   {
@@ -26,7 +31,6 @@ const topicSchema = new mongoose.Schema(
   }
 );
 
-// Check if the model already exists
 const Topic = mongoose.models.Topic || mongoose.model("Topic", topicSchema);
 
 module.exports = Topic;

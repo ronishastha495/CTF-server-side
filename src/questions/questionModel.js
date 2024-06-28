@@ -14,6 +14,11 @@ const questionSchema = new mongoose.Schema(
         hint: { type: String },
       },
     ],
+    topic: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Topic",
+      required: true,
+    },
   },
   { timestamps: true }
 );
