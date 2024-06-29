@@ -116,7 +116,7 @@ const deleteQuestionSet = async (req, res, next) => {
   const { id } = req.params.id;
   try {
     const question = await questionModel.findByIdAndDelete(id);
-  
+
     res.status(200).json({
       StatusCode: 200,
       IsSuccess: true,
