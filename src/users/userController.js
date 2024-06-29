@@ -116,7 +116,7 @@ const loginUser = async (req, res, next) => {
       IsSuccess: true,
       ErrorMessage: [],
       Result: {
-        message: "User Login Sucessfully",
+        message: "Login Sucessfully",
         accessToken: accessToken,
         refreshToken: refreshToken,
         user_data: userObj,

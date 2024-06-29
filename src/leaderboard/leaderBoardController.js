@@ -13,6 +13,7 @@ const getLeaderboard = async (req, res, next) => {
       StatusCode: 200,
       IsSuccess: true,
       ErrorMessage: [],
+      message: "Sucessfully fetched the leaderboard",
       Result: topUsers,
     });
   } catch (error) {
