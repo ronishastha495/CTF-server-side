@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.use("/api", leaderBoardRouter);
+app.use("/api/leaderboard", leaderBoardRouter);
 app.use("/api/users", userRouter);
 app.use("/api/topic", topicRouter);
 app.use("/api/question", questionRouter);

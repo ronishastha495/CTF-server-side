@@ -4,7 +4,7 @@ const userModel = require("../users/userModel");
 const getLeaderboard = async (req, res, next) => {
   try {
     const topUsers = await userModel
-      .find()
+      .find({ role: "user" })
       .sort({ rewards: -1 })
       .limit(3)
       .select("fullname rewards");

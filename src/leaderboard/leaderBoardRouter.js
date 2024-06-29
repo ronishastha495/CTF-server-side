@@ -2,6 +2,6 @@ const express = require("express");
 const leaderBoardRouter = express.Router();
 const { getLeaderboard } = require("../leaderboard/leaderBoardController");
 
-leaderBoardRouter.get("/leaderboard", getLeaderboard);
+leaderBoardRouter.get("/", getLeaderboard);
 
 module.exports = leaderBoardRouter;

@@ -14,6 +14,7 @@ const {
   getUserById,
   handleUserDelete,
   refreshAccessToken,
+  getUserProgress,
 } = require("./userController");
 const userRouter = express.Router();
 
