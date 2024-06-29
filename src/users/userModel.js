@@ -28,10 +28,7 @@ const userModelSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    solvedQuizzes: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Question",
-    }],
+    solvedQuizzes: [],
     rewards: {
       type: Number,
       default: 0,
@@ -41,5 +38,4 @@ const userModelSchema = new mongoose.Schema(
 );
 
 const UserModel = mongoose.model("User", userModelSchema);
-
 module.exports = UserModel;
