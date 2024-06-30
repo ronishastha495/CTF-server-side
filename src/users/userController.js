@@ -47,7 +47,7 @@ const registerUser = async (req, res, next) => {
       data: newUser,
     });
   } catch (error) {
-    next(createError(500, "Server Error while creating new user."));
+    next(createError(500, `Server Error while creating new user ${error.message}`));
   }
 };
 
