@@ -7,7 +7,7 @@ const getLeaderboard = async (req, res, next) => {
       .find({ role: "user" })
       .sort({ rewards: -1 })
       .limit(3)
-      .select("fullname rewards");
+      .select("fullname rewards country");
 
     res.status(200).json({
       StatusCode: 200,
