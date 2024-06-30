@@ -7,13 +7,13 @@ const getLeaderboard = async (req, res, next) => {
       .find({ role: "user" })
       .sort({ rewards: -1 })
       .limit(3)
-      .select("fullname rewards");
+      .select("fullname rewards country");
 
     res.status(200).json({
       StatusCode: 200,
       IsSuccess: true,
       ErrorMessage: [],
-      message: "Sucessfully fetched the leaderboard",
+      message: "Sucessfully show the leaderboard",
       Result: topUsers,
     });
   } catch (error) {

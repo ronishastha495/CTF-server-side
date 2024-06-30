@@ -78,13 +78,34 @@ const getAllQuestion = async (req, res, next) => {
 
 const updateQuestionSet = async (req, res, next) => {
   const { id } = req.params;
+
   const { title, introduction, tools, scenario, process, questions } = req.body;
+
   if (!title || !questions) {
-    const error = createError(400, "Title and questions are required.");
-    return next(error);
+    const errorMessage = "Title and questions are required.";
+    console.error(errorMessage);
+    return res.status(400).json({
+      StatusCode: 400,
+      IsSuccess: false,
+      ErrorMessage: [errorMessage],
+      Result: {},
+    });
   }
+
+  const questionExists = await questionModel.findById(id);
+  if (!questionExists) {
+    const errorMessage = "Question not found.";
+    console.error(errorMessage);
+    return res.status(404).json({
+      StatusCode: 404,
+      IsSuccess: false,
+      ErrorMessage: [errorMessage],
+      Result: {},
+    });
+  }
+
   try {
-    const question = await questionModel.findByIdAndUpdate(
+    const updatedQuestion = await questionModel.findByIdAndUpdate(
       id,
       {
         title,
@@ -96,13 +117,14 @@ const updateQuestionSet = async (req, res, next) => {
       },
       { new: true }
     );
+
     res.status(200).json({
       StatusCode: 200,
       IsSuccess: true,
       ErrorMessage: [],
       Result: {
         message: "Question Updated successfully",
-        Question: question,
+        Question: updatedQuestion,
       },
     });
   } catch (error) {
@@ -113,9 +135,10 @@ const updateQuestionSet = async (req, res, next) => {
 };
 
 const deleteQuestionSet = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.params.id;
   try {
     const question = await questionModel.findByIdAndDelete(id);
+
     res.status(200).json({
       StatusCode: 200,
       IsSuccess: true,
@@ -137,13 +160,14 @@ const deleteSubQuestion = async (req, res, next) => {
   const subQuestionId = req.params.subQuestionId;
 
   try {
-    const question = await questionModel.findById(questionId);
+    let question = await questionModel.findById(questionId);
+    console.log(question);
 
     if (!question) {
       return next(createError(404, "Question not found."));
     }
 
-    const subQuestionIndex = question.questions.findIndex(
+    const subQuestionIndex = question.quiz.findIndex(
       (q) => q._id.toString() === subQuestionId
     );
 
@@ -151,8 +175,7 @@ const deleteSubQuestion = async (req, res, next) => {
       return next(createError(404, "Sub-question not found."));
     }
 
-    question.questions.splice(subQuestionIndex, 1);
-
+    question.quiz.splice(subQuestionIndex, 1);
     await question.save();
 
     res.status(200).json({
@@ -164,10 +187,11 @@ const deleteSubQuestion = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.error("Error deleting sub-question:", error);
     next(
       createError(
         500,
-        `Server Error while deleting sub-question.${error.message}`
+        `Server Error while deleting sub-question: ${error.message}`
       )
     );
   }

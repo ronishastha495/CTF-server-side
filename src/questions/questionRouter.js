@@ -20,6 +20,7 @@ questionRouter.get(
   isAdmin,
   getAllQuestion
 );
+
 questionRouter.post(
   "/update/:id",
   authenticateToken,
