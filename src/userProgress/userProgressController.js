@@ -31,6 +31,8 @@ const handleProgress = async (req, res, next) => {
     const questions = await questionModel
       .findOne({ "quiz._id": quizId })
       .populate("topic");
+
+      console.log(questions);
     if (!questions) {
       return next(createError(400, "Quiz not found"));
     }
