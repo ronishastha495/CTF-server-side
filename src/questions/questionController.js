@@ -78,13 +78,35 @@ const getAllQuestion = async (req, res, next) => {
 
 const updateQuestionSet = async (req, res, next) => {
   const { id } = req.params;
+  console.log(`Updating question with ID: ${id}`);
+
   const { title, introduction, tools, scenario, process, questions } = req.body;
+
   if (!title || !questions) {
-    const error = createError(400, "Title and questions are required.");
-    return next(error);
+    const errorMessage = "Title and questions are required.";
+    console.error(errorMessage);
+    return res.status(400).json({
+      StatusCode: 400,
+      IsSuccess: false,
+      ErrorMessage: [errorMessage],
+      Result: {},
+    });
   }
+
+  const questionExists = await questionModel.findById(id);
+  if (!questionExists) {
+    const errorMessage = "Question not found.";
+    console.error(errorMessage);
+    return res.status(404).json({
+      StatusCode: 404,
+      IsSuccess: false,
+      ErrorMessage: [errorMessage],
+      Result: {},
+    });
+  }
+
   try {
-    const question = await questionModel.findByIdAndUpdate(
+    const updatedQuestion = await questionModel.findByIdAndUpdate(
       id,
       {
         title,
@@ -96,13 +118,14 @@ const updateQuestionSet = async (req, res, next) => {
       },
       { new: true }
     );
+
     res.status(200).json({
       StatusCode: 200,
       IsSuccess: true,
       ErrorMessage: [],
       Result: {
         message: "Question Updated successfully",
-        Question: question,
+        Question: updatedQuestion,
       },
     });
   } catch (error) {
