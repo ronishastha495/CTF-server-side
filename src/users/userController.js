@@ -9,8 +9,8 @@ const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const registerUser = async (req, res, next) => {
-  const { fullname, username, email, password, role } = req.body;
-  if (!fullname || !username || !email || !password) {
+  const { fullname, username, email, password, country, role } = req.body;
+  if (!fullname || !username || !email || !country || !password) {
     const error = createError(400, "All fields are required.");
     return next(error);
   }
@@ -32,19 +32,25 @@ const registerUser = async (req, res, next) => {
       const error = createError(400, "Email is already registered.");
       return next(error);
     }
-    // Hash the password
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await userModel.create({
       fullname,
       username,
       email,
       password: hashedPassword,
+      country,
       role: role || "user",
     });
 
     res.status(200).json({
-      message: "User registered sucessfully",
-      data: newUser,
+      StatusCode: 200,
+      IsSuccess: true,
+      ErrorMessage: [],
+      Result: {
+        message: "User registered successfully",
+        user_data: newUser,
+      },
     });
   } catch (error) {
     next(createError(500, `Server Error while creating new user ${error.message}`));
