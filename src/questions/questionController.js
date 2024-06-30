@@ -78,7 +78,6 @@ const getAllQuestion = async (req, res, next) => {
 
 const updateQuestionSet = async (req, res, next) => {
   const { id } = req.params;
-  console.log(`Updating question with ID: ${id}`);
 
   const { title, introduction, tools, scenario, process, questions } = req.body;
 
@@ -161,13 +160,14 @@ const deleteSubQuestion = async (req, res, next) => {
   const subQuestionId = req.params.subQuestionId;
 
   try {
-    const question = await questionModel.findById(questionId);
+    let question = await questionModel.findById(questionId);
+    console.log(question);
 
     if (!question) {
       return next(createError(404, "Question not found."));
     }
 
-    const subQuestionIndex = question.questions.findIndex(
+    const subQuestionIndex = question.quiz.findIndex(
       (q) => q._id.toString() === subQuestionId
     );
 
@@ -175,8 +175,7 @@ const deleteSubQuestion = async (req, res, next) => {
       return next(createError(404, "Sub-question not found."));
     }
 
-    question.questions.splice(subQuestionIndex, 1);
-
+    question.quiz.splice(subQuestionIndex, 1);
     await question.save();
 
     res.status(200).json({
@@ -188,10 +187,11 @@ const deleteSubQuestion = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.error("Error deleting sub-question:", error);
     next(
       createError(
         500,
-        `Server Error while deleting sub-question.${error.message}`
+        `Server Error while deleting sub-question: ${error.message}`
       )
     );
   }
