@@ -50,9 +50,9 @@ const getTopic = async (req, res, next) => {
     const topics = await topicModel.find({});
     console.log("topics from model", topics)
     const message =
-      topics.length >= 0
-        ? "Successfully fetched all topics"
-        : "No topics were created";
+      topics.length <= 0
+        ? "No topics were created"
+        : "Successfully fetched all topics";
 
     res.status(200).json({
       StatusCode: 200,
@@ -75,10 +75,11 @@ const getTopic = async (req, res, next) => {
 
 const getSingleTopic = async (req, res, next) => {
   const { id } = req.params;
+  console.log(id);
   try {
     const topicDetails = await topicModel.findById(id);
-    if (topicDetails.length <= 0) {
-      return next(createError(404, "Topic details not found"));
+    if (!topicDetails) {
+      return next(createError(400, "Topic details not found"));
     }
     res.status(200).json({
       StatusCode: 200,
@@ -106,7 +107,7 @@ const updateTopic = async (req, res, next) => {
       { topic, description, difficulty, updatedBy },
       { new: true }
     );
-    if (updatedTopic.length <= 0) {
+    if (!updatedTopic) {
       return next(createError(404, "Topic details not found"));
     }
     res.status(200).json({
@@ -132,7 +133,7 @@ const deleteTopic = async (req, res, next) => {
   const { id } = req.params;
   try {
     const deletedTopic = await topicModel.findByIdAndDelete(id);
-    if (deletedTopic.length <= 0) {
+    if (!deletedTopic) {
       return next(createError(404, "Topic details not found"));
     }
     res.status(200).json({

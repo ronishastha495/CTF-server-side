@@ -8,10 +8,20 @@ const config = require("../config/config");
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
+const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
+
 const registerUser = async (req, res, next) => {
   const { fullname, username, email, password, country, role } = req.body;
   if (!fullname || !username || !email || !country || !password) {
     const error = createError(400, "All fields are required.");
+    return next(error);
+  }
+
+  if (!usernameRegex.test(username)) {
+    const error = createError(
+      400,
+      "Username must be alphanumeric and between 3 to 20 characters long."
+    );
     return next(error);
   }
 
@@ -106,7 +116,7 @@ const loginUser = async (req, res, next) => {
       IsSuccess: true,
       ErrorMessage: [],
       Result: {
-        message: "User Login Sucessfully",
+        message: "Login Sucessfully",
         accessToken: accessToken,
         refreshToken: refreshToken,
         user_data: userObj,
@@ -239,6 +249,7 @@ const handleUserDelete = async (req, res, next) => {
     return next(createError(500, "Server error while deleting user."));
   }
 };
+
 
 module.exports = {
   registerUser,

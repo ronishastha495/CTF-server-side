@@ -34,13 +34,10 @@ const handleProgress = async (req, res, next) => {
     if (!questions) {
       return next(createError(400, "Quiz not found"));
     }
-    console.log(questions);
 
     const quizQuestion = questions.quiz.find(
       (q) => q._id.toString() === quizId
     );
-
-    console.log(quizQuestion);
 
     if (!quizQuestion) {
       return next(createError(400, "Quiz question not found"));
@@ -53,30 +50,33 @@ const handleProgress = async (req, res, next) => {
       });
 
       if (alreadySolved) {
-        return next(createError(400, "Quiz already solved"));
+        return next(createError(400, "Flag already Captured"));
       }
 
       const userProgress = new UserProgress({ user: userId, quiz: quizId });
       await userProgress.save();
 
       const points = getPoints(questions.topic.difficulty);
-      user.solvedQuizzes.push(quizId);
+      user.solvedQuizzes.push(quizQuestion._id);
       user.rewards += points;
 
       await user.save();
+
+      const isComplete = user.solvedQuizzes.includes(quizQuestion._id);
 
       res.status(200).json({
         StatusCode: 200,
         IsSuccess: true,
         ErrorMessage: [],
         Result: {
-          message: "Quiz solved successfully",
+          message: "Flag Captured successfully",
           points: points,
           Quiz: quizQuestion,
+          isComplete: isComplete,
         },
       });
     } else {
-      return next(createError(400, "Incorrect answer"));
+      return next(createError(400, "Incorrect Answer"));
     }
   } catch (error) {
     next(

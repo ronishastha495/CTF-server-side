@@ -10,6 +10,6 @@ topicRouter.post("/createTopic",authenticateToken, isAdmin, createTopic);
 topicRouter.get("/getAllTopic", getTopic);
 topicRouter.get("/getSingleTopic/:id",authenticateToken, getSingleTopic);
 topicRouter.put("/updateTopic/:id",authenticateToken, isAdmin, updateTopic);
-topicRouter.delete("/DeleteTopic/:id",authenticateToken, isAdmin, deleteTopic);
+topicRouter.delete("/deleteTopic/:id",authenticateToken, isAdmin, deleteTopic);
 
 module.exports =  topicRouter ;
